@@ -14,6 +14,10 @@ Ce projet comporte 2 versions :
 
 Les deux versions fonctionnes, la seconde est beaucoup plus longue en temps d'execution, puisqu'elle fait l'attaque sur chaque bit.
 
+## Prérequis
+Disposer des bibliothèques de développement d'[OpenSSL](https://openssl-library.org/)
+Disposer des bibliothèques de [GNU MP](https://gmplib.org/)
+
 ## Aides
 Pour compiler le projet :
 ```shell
