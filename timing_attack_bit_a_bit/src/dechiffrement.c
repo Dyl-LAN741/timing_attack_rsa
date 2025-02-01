@@ -14,7 +14,7 @@ static void padding_dechiffrement(mpz_t m)
 {
    size_t i;
    size_t size_m = mpz_sizeinbase(m, 2);
-   char* str_m = malloc(mpz_sizeinbase(m, 2) + 1);
+   char* str_m = malloc(size_m + 1);
    mpz_t msk;
    mpz_init(msk);
 
@@ -22,12 +22,12 @@ static void padding_dechiffrement(mpz_t m)
    
    for(i = 0; i < size_m - (size_m - 74); i++)
    {
-      strncat(str_m, "0", 1);
+      strncat(str_m, "0", size_m - strlen(str_m) - 1);
    }
 
    for(i = 0; i < size_m - 74; i++)
    {
-      strncat(str_m, "1", 1);
+      strncat(str_m, "1", size_m - strlen(str_m) - 1);
    }
 
    mpz_set_str(msk, str_m, 2);

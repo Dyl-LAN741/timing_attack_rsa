@@ -262,20 +262,21 @@ void afficher_ensemble_complet(ENSEMBLE* ens, const char* nom)
 			if(verification_liste_non_null(ens->bit[i]))
 			{
 				char str_bit[255];
-				char nom_liste[9] = "bit "; 
-				char* nom_ensemble = malloc(sizeof(char) * strlen(nom) + sizeof(char) * 2 + sizeof(char) * (int) (log10(i+1) + 1) + 1);
+				char nom_liste[9] = "bit ";
+				size_t buffer_ensemble = sizeof(char) * strlen(nom) + sizeof(char) * 2 + sizeof(char) * (int) (log10(i+1) + 1) + 1;
+				char* nom_ensemble = malloc(buffer_ensemble);
 
 				nom_ensemble[0] = '\0';
 				sprintf(str_bit, "%d", i);
 				
-				strncat(nom_ensemble, nom, strlen(nom));
-				strncat(nom_ensemble, "[", 1);
-				strncat(nom_ensemble, str_bit, strlen(str_bit));
-				strncat(nom_ensemble, "]", 1);
+				strncat(nom_ensemble, nom, buffer_ensemble - strlen(nom_ensemble) - 1);
+				strncat(nom_ensemble, "[", buffer_ensemble - strlen(nom_ensemble) - 1);
+				strncat(nom_ensemble, str_bit, buffer_ensemble - strlen(nom_ensemble) - 1);
+				strncat(nom_ensemble, "]", buffer_ensemble - strlen(nom_ensemble) - 1);
 				printf("%s\n", nom_ensemble);
 				
 				sprintf(str_bit, "%d", i+1);
-				strncat(nom_liste, str_bit, strlen(str_bit));
+				strncat(nom_liste, str_bit, 9 - strlen(nom_liste) - 1);
 				afficher_liste_complete(ens->bit[i], nom_liste);
 			}
 		}
@@ -294,21 +295,22 @@ void afficher_ensemble_simple(ENSEMBLE* ens, const char* nom)
 			{
 				char str_bit[255];
 				char nom_liste[9] = "bit "; 
-				char* nom_ensemble = malloc(sizeof(char) * strlen(nom) + sizeof(char) * 5 + sizeof(char) * 9 + sizeof(char) * (int) (log10(i+1) + 1) + 1);
+				size_t buffer_ensemble = sizeof(char) * strlen(nom) + sizeof(char) * 5 + sizeof(char) * 9 + sizeof(char) * (int) (log10(i+1) + 1) + 1;
+				char* nom_ensemble = malloc(buffer_ensemble);
 
 				nom_ensemble[0] = '\0';
 				sprintf(str_bit, "%d", i);
 				
-				strncat(nom_ensemble, nom, strlen(nom));
-				strncat(nom_ensemble, "[", 1);
-				strncat(nom_ensemble, str_bit, strlen(str_bit));
-				strncat(nom_ensemble, "]", 1);
-				strncat(nom_ensemble, " : ", 3);
+				strncat(nom_ensemble, nom, buffer_ensemble - strlen(nom_ensemble) - 1);
+				strncat(nom_ensemble, "[", buffer_ensemble - strlen(nom_ensemble) - 1);
+				strncat(nom_ensemble, str_bit, buffer_ensemble - strlen(nom_ensemble) - 1);
+				strncat(nom_ensemble, "]", buffer_ensemble - strlen(nom_ensemble) - 1);
+				strncat(nom_ensemble, " : ", buffer_ensemble - strlen(nom_ensemble) - 1);
 
 				sprintf(str_bit, "%d", i+1);
-				strncat(nom_liste, str_bit, strlen(str_bit));
+				strncat(nom_liste, str_bit, 9 - strlen(nom_liste));
 
-				strncat(nom_ensemble, nom_liste, strlen(nom_liste));
+				strncat(nom_ensemble, nom_liste, buffer_ensemble - strlen(nom_ensemble) - 1);
 				printf("%s\n", nom_ensemble);
 
 				afficher_liste_simple(ens->bit[i], "");
@@ -469,19 +471,19 @@ void reconstituer_d(mpz_t resultat)
 	mpz_init(d_secret);
 	
 	str_d[0] = '\0';
-	strncat(str_d, "1", 1);		//dk-1 = 1
+	strncat(str_d, "1", d_size + 1 - strlen(str_d) - 1);		//dk-1 = 1
 	for(i = d_size - 2; i > 0; i--)	//pour dk - i avec 1 < i < k-1
 	{
 		if(T->bit_value[i] == 0)
 		{
-			strncat(str_d, "0", 1);
+			strncat(str_d, "0", d_size + 1 - strlen(str_d) - 1);
 
 		} else if(T->bit_value[i] == 1)
 		{
-			strncat(str_d, "1", 1);
+			strncat(str_d, "1", d_size + 1 - strlen(str_d) - 1);
 		}
 	}
-	strncat(str_d, "1", 1);		//d0 = 1
+	strncat(str_d, "1", d_size + 1 - strlen(str_d) - 1);		//d0 = 1
 	mpz_set_str(d_secret, str_d, 2);
 
 	mpz_set(resultat, d_secret);	//sauve garde la clé secrète

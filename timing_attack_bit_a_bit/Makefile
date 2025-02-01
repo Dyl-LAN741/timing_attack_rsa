@@ -20,7 +20,7 @@ vpath %.h inc
 
 # Lance toutes les étapes
 all: dirs
-	@./bin/main.exe
+	./bin/main.exe
 	
 # Lance la création des dossiers bin et obj et l'édition de liens
 dirs: checkdirs $(EXEC)
@@ -34,7 +34,7 @@ $(BUILD_DIR):
 
 # Edition de liens
 main.exe: $(OBJ)
-	@$(CC) $(CFLAGS) -o $(DIR_EXEC)/$@  $(addprefix $(DIR_OBJ)/,$^) $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $(DIR_EXEC)/$@  $(addprefix $(DIR_OBJ)/,$^) $(LDFLAGS)
 
 # Dépendance des fichiers .o
 main.o: rsa.h
@@ -45,7 +45,7 @@ square_multiply.o: square_multiply.h
 
 miller_rabin.o: miller_rabin.h square_multiply.h creation_des_cles.h
 
-chiffrement.o: chiffrement.h square_multiply.h miller_rabin.h
+chiffrement.o: chiffrement.h miller_rabin.h creation_des_cles.h square_multiply.h temps.h timing_attack.h
 
 dechiffrement.o: dechiffrement.h chiffrement.h square_multiply.h
 
@@ -53,13 +53,11 @@ creation_des_cles.o: creation_des_cles.h miller_rabin.h
 
 temps.o: temps.h
 
-montgomery.o: montgomery.h
-
 timing_attack.o: timing_attack.h temps.h creation_des_cles.h
 
 # Compilation
 %.o: %.c
-	@$(CC) $(OFLAGS) $(CFLAGS) -c $< -o $(DIR_OBJ)/$@
+	$(CC) $(OFLAGS) $(CFLAGS) -c $< -o $(DIR_OBJ)/$@
 
 .PHONY: clean
 
@@ -75,4 +73,3 @@ clean:
 	@ls -G
 	@echo "\r\n####################\r\n"
 	@ls -lhFUGS $(DIR_SRC) $(DIR_HEADERS)
-	

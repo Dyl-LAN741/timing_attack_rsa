@@ -45,15 +45,13 @@ square_multiply.o: square_multiply.h
 
 miller_rabin.o: miller_rabin.h square_multiply.h creation_des_cles.h
 
-chiffrement.o: chiffrement.h square_multiply.h miller_rabin.h
+chiffrement.o: chiffrement.h miller_rabin.h creation_des_cles.h square_multiply.h temps.h timing_attack.h
 
 dechiffrement.o: dechiffrement.h chiffrement.h square_multiply.h
 
 creation_des_cles.o: creation_des_cles.h miller_rabin.h
 
 temps.o: temps.h
-
-montgomery.o: montgomery.h
 
 timing_attack.o: timing_attack.h temps.h creation_des_cles.h
 
@@ -75,4 +73,3 @@ clean:
 	@ls -G
 	@echo "\r\n####################\r\n"
 	@ls -lhFUGS $(DIR_SRC) $(DIR_HEADERS)
-	

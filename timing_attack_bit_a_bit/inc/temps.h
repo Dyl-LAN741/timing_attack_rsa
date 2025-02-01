@@ -1,9 +1,16 @@
 #ifndef _TEMPS_H_
 #define _TEMPS_H_
-#define _POSIX_C_SOURCE 199309L
+
+#ifndef _POSIX_C_SOURCE
+    #define _POSIX_C_SOURCE 199309L //for clock_time functions
+#endif
+
+#ifndef _GNU_SOURCE
+    #define _GNU_SOURCE //fix warning implicit declaration
+#endif
+
 #include <sys/time.h>
 #include <time.h>
-#define _GNU_SOURCE	//fix warning implicit declaration
 
 struct timespec;	//fix warning scope
 

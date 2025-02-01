@@ -134,22 +134,23 @@ bool miller_rabin(const mpz_t n)
 }
 
 //ajoute un bit aléatoire dans la chaine
-void random_bit(char** random_number, double bit_value, double limit_value)
+void random_bit(char** random_number, double bit_value, double limit_value, int bits)
 {
 	//nombre aléatoire entre 0 et 1
 	bit_value = (double) rand() / RAND_MAX;
 	//limite d'acceptation aléatoire pour les bits à 1
 	limit_value = (double) rand() / RAND_MAX;
+
 	
 	//si nombre < limite alors b = 0
 	//sinon si ≥ limite alors b = 1
 	if(bit_value < limit_value)
 	{
-		strncat(*random_number, "0", 1);
+		strncat(*random_number, "0", bits - strlen(*random_number) - 1);
 	}
 	else if(bit_value >= limit_value)
 	{
-		strncat(*random_number, "1", 1);
+		strncat(*random_number, "1", bits - strlen(*random_number) - 1);
 	}
 }
 
@@ -183,12 +184,12 @@ void generer_un_nombre_premier(mpz_t p, int bits)
 		strncpy(random_number,"\0", strlen(random_number));
 
 		//génère un nombre aléatoire entre 2^(b - 1) + 1 et 2^(b) - 1
-		strncat(random_number, "1", 1);		//met le bit de poids le plus fort à 1
+		strncat(random_number, "1", (bits + 1) - strlen(random_number) - 1);		//met le bit de poids le plus fort à 1
 		for(j = 1; j < bits - 1; j++)		//remplie aléatoirement la chaine de 0 ou 1
 		{
-			random_bit(&random_number, b_value, limit_value);
+			random_bit(&random_number, b_value, limit_value, bits);
 		}
-		strncat(random_number, "1", 1);		//met le bit de poids le plus faible à 1
+		strncat(random_number, "1", (bits + 1) - strlen(random_number) - 1);		//met le bit de poids le plus faible à 1
 
 		//convertie le nombre aléatoire représenté en binaire en nombre décimal
 		mpz_set_str(p, random_number, 2);

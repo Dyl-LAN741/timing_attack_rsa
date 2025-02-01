@@ -1,5 +1,6 @@
-#define _GNU_SOURCE //fix timespec initialisation
-
+#ifndef _GNU_SOURCE
+    #define _GNU_SOURCE //fix timespec initialisation
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,6 +15,8 @@
 #include "dechiffrement.h"
 #include "rsa.h"
 #include "timing_attack.h"
+
+bool padding = true; //padding par defaut
 
 static void choix_mode_rsa(char* choix)
 {

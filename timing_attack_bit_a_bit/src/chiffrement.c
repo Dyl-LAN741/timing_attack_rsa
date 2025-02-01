@@ -1,3 +1,6 @@
+#ifndef _POSIX_C_SOURCE
+   #define _POSIX_C_SOURCE 199309L //for clock_time functions
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,7 +31,8 @@ static void padding_chiffrement(mpz_t m)
 {
    size_t i, j;
    double bit_value = 0, limit_value = 0;
-   char* random_number = malloc(sizeof(char) * PADDING_SIZE + mpz_sizeinbase(m, 2) + 1); //chaine de 88 bits (11 octets) + bits du message
+   size_t size_m = mpz_sizeinbase(m, 2);
+   char* random_number = malloc(sizeof(char) * PADDING_SIZE + size_m + 1); //chaine de 88 bits (11 octets) + bits du message
    char* byte = malloc(sizeof(char) * BYTE_SIZE + 1);   //chaine de 8 bits (1 octet)
    char* tmp = malloc(mpz_sizeinbase(m,2) + 1);
    
@@ -55,7 +59,7 @@ static void padding_chiffrement(mpz_t m)
 
          for(j = 0; j <= taille_message; j++)
          {
-            strncat(random_number, &tmp[j], 1);
+            strncat(random_number, &tmp[j], PADDING_SIZE + size_m + 1 - strlen(random_number) - 1);
          }
 
          mpz_set_str(m, random_number, 2);
@@ -67,7 +71,7 @@ static void padding_chiffrement(mpz_t m)
       {
          for(j = 0; j < BYTE_SIZE; j++)
          {  
-            strncat(random_number, "0", 1);
+            strncat(random_number, "0", PADDING_SIZE + size_m + 1 - strlen(random_number) - 1);
          }
          continue;
       }
@@ -79,22 +83,22 @@ static void padding_chiffrement(mpz_t m)
             strncpy(byte,"\0", strlen(byte));
             for(j = 0; j < BYTE_SIZE; j++)
             {
-               random_bit(&byte, bit_value, limit_value);
+               random_bit(&byte, bit_value, limit_value, BYTE_SIZE + 1);
             }
          } while(strncmp(byte,"00000000", BYTE_SIZE) == 0);
 
-         strncat(random_number, byte, BYTE_SIZE);
+         strncat(random_number, byte, PADDING_SIZE + size_m + 1 - strlen(random_number) - 1);
          continue;
       }
       //#1 octet Ø2
       if(i == 1)
       {
-         strncat(random_number, "00000010", BYTE_SIZE);
+         strncat(random_number, "00000010", PADDING_SIZE + size_m + 1 - strlen(random_number) - 1);
          continue;
       }
       //#1 octet ØØ
       if(i == 0)
-         strncat(random_number, "00000000", BYTE_SIZE);
+         strncat(random_number, "00000000", PADDING_SIZE + size_m + 1 - strlen(random_number) - 1);
    }
 
    free(random_number);
@@ -174,16 +178,16 @@ void hash(mpz_t hm)
       taille = sizeof(hexa);
       if(strcmp(hexa,"0") == 0)
       {
-         strncat(tmp, "00", 2);
+         strncat(tmp, "00", 65 - strlen(tmp) - 1);
       }
       else if((taille == 1) && strcmp(hexa,"0") != 0)
       {
-         strncat(tmp, "0", 1);
-         strncat(tmp, hexa, 1);
+         strncat(tmp, "0", 65 - strlen(tmp) - 1);
+         strncat(tmp, hexa, 65 - strlen(tmp) - 1);
       }
       else
       {
-         strncat(tmp, hexa, taille);
+         strncat(tmp, hexa, 65 - strlen(tmp) - 1);
       }
       //printf("hexa: %s\n", hexa);
       //printf("hash: %s\n", tmp);
@@ -211,7 +215,8 @@ void hash(mpz_t hm)
 void padding_signature(mpz_t m)    //m est déjà hashé
 {
    size_t i, j;
-   char* random_number = malloc(sizeof(char) * PADDING_SIZE + mpz_sizeinbase(m, 2) + 1); //chaine de 88 bits (11 octets) + bits du message
+   size_t size_m = mpz_sizeinbase(m, 2);
+   char* random_number = malloc(sizeof(char) * PADDING_SIZE + size_m + 1); //chaine de 88 bits (11 octets) + bits du message
    char* byte = malloc(sizeof(char) * BYTE_SIZE + 1);   //1 octet
    char* tmp = malloc(mpz_sizeinbase(m, 2) + 1);
    
@@ -250,24 +255,24 @@ void padding_signature(mpz_t m)    //m est déjà hashé
       //1 octet ØØ
       if(i == 10)
       {
-         strncat(random_number, "00", 2);
+         strncat(random_number, "00", PADDING_SIZE + size_m + 1 - strlen(random_number) - 1);
          continue;
       }
       //8 octets FF
       if(1 < i && i < 10)
       {
-         strncat(random_number, "FF", 2);
+         strncat(random_number, "FF", PADDING_SIZE + size_m + 1 - strlen(random_number) - 1);
          continue;
       }
       //#1 octet Ø1
       if(i == 1)
       {
-         strncat(random_number, "01", 2);
+         strncat(random_number, "01", PADDING_SIZE + size_m + 1 - strlen(random_number) - 1);
          continue;
       }
       //#1 octet ØØ
       if(i == 0)
-         strncat(random_number, "00", 2);
+         strncat(random_number, "00", PADDING_SIZE + size_m + 1 - strlen(random_number) - 1);
    }
 
    free(random_number);
