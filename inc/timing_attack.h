@@ -34,7 +34,7 @@ ELEMENT* initialiser_element(const double temps);
 void afficher_element(const ELEMENT* elem, const char* nom);
 
 //Fonctions pour les listes
-LISTE* initialiser_lsite();
+LISTE* initialiser_lsite(void);
 void ajouter_element_liste(ELEMENT* elem, LISTE** ens);
 ELEMENT* retourner_element_liste(LISTE** ens);
 void afficher_liste_complete(const LISTE* ens, const char* nom);
@@ -43,7 +43,7 @@ void supprimer_liste(LISTE** ens, const char* nom);
 void calculer_temps_moyen_liste(LISTE** liste);
 
 //Fonctions pour les ensembles
-ENSEMBLE* initialiser_ensemble();
+ENSEMBLE* initialiser_ensemble(void);
 void ajouter_element(ELEMENT *elem, ENSEMBLE** eg, const unsigned int bit);
 ELEMENT* retourner_element(ENSEMBLE** eg, const unsigned int bit);
 void supprimer_ensemble(ENSEMBLE** eg, const char* nom);
@@ -53,9 +53,9 @@ void calculer_temps_moyen(ENSEMBLE** ens);
 void calculer_difference_temps_moyen(ENSEMBLE** a, ENSEMBLE** b);	//calcul la différence des temps moyens entre a et b
 
 //Fonctions pour le tableau
-TAB* initialiser_tableau();
+TAB* initialiser_tableau(void);
 void supprimer_tableau(TAB** tab);
-void afficher_tableau_T();
+void afficher_tableau_T(void);
 
 //Variables globales
 extern ENSEMBLE* A;
@@ -67,7 +67,7 @@ extern unsigned int DECRYPT;					//0 = déchiffrement non effectué, 1 = déchif
 extern unsigned int TEMPS_REDUC;				//temps de la reduction de mongomery en nanosecondes
 
 //Fonctions pour les variables globales
-void initialiser_variables_globales_timing_attack();
+void initialiser_variables_globales_timing_attack(void);
 
 //Fonctions générales
 void reconstituer_d(mpz_t resultat);			//reconstitue la clé secrète d à l'aide du tableau T

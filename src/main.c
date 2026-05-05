@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "rsa.h"
 
-int main()
+int main(void)
 {   
     run();
     exit(0);

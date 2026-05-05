@@ -20,7 +20,7 @@ unsigned int arret = 1;
 unsigned int TEMPS_REDUC = 0;
 
 //Initialise les variables globales pour le timing attack
-void initialiser_variables_globales_timing_attack()
+void initialiser_variables_globales_timing_attack(void)
 {
     A = initialiser_ensemble();
     B = initialiser_ensemble();
@@ -54,7 +54,7 @@ void afficher_element(const ELEMENT* elem, const char* nom)
 	printf("\t\tL'element %s est %.9f\n\n", nom, elem->temps);
 }
 
-LISTE* initialiser_liste()
+LISTE* initialiser_liste(void)
 {
 	LISTE* liste = malloc(sizeof(LISTE));
 	
@@ -212,7 +212,7 @@ void supprimer_liste(LISTE** liste, const char* nom)
 	printf("\t\tLa liste %s a ete supprimee.\n\n", nom);
 }
 
-ENSEMBLE* initialiser_ensemble()
+ENSEMBLE* initialiser_ensemble(void)
 {
 	unsigned int i = 0;
 
@@ -403,7 +403,7 @@ void supprimer_ensemble(ENSEMBLE** ens, const char* nom)
 	//printf("\t\tL'ensemble %s a ete supprimee.\n\n", nom);
 }
 
-TAB* initialiser_tableau()
+TAB* initialiser_tableau(void)
 {
 	unsigned int i;
 	TAB* tab = malloc(sizeof(TAB));	
@@ -453,7 +453,7 @@ void supprimer_tableau(TAB** tab)
 	//printf("\t\tLe tableau a ete supprimee.\n\n");
 }
 
-void afficher_tableau_T()
+void afficher_tableau_T(void)
 {
 	unsigned int i;
 	printf("T :\n");

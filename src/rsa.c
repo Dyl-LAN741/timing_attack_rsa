@@ -152,7 +152,7 @@ static void choix_padding(char* choix)
     }
 }
 
-void run()
+void run(void)
 {
     unsigned long int nombre_iteration;
     char m = '\0', t = '\0', p = '\0', c = '\0';
