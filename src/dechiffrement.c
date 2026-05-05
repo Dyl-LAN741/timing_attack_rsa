@@ -18,16 +18,14 @@ static void padding_dechiffrement(mpz_t m)
    mpz_t msk;
    mpz_init(msk);
 
-   strncpy(str_m, "\0", strlen(str_m));
+   str_m[0] = '\0';
    
-   for(i = 0; i < size_m - (size_m - 74); i++)
-   {
-      strncat(str_m, "0", size_m - strlen(str_m) - 1);
+   for (i = 0; i < 74; i++) {
+      str_m[i] = '0';
    }
 
-   for(i = 0; i < size_m - 74; i++)
-   {
-      strncat(str_m, "1", size_m - strlen(str_m) - 1);
+   for (i = 74; i < size_m; i++) {
+      str_m[i] = '1';
    }
 
    mpz_set_str(msk, str_m, 2);
@@ -51,7 +49,8 @@ void verification_signature(mpz_t s, const mpz_t e, const mpz_t n, const mpz_t h
    mpz_init(pkcs_ms);
    mpz_init(pkcs_hm);
    mpz_set(pkcs_hm, hm);
-   square_and_multiply(s, e, n, pkcs_ms);    //s^e mod n
+   square_and_multiply(s, e, n, pkcs_ms);    //sans padding : s^e mod n = H(m)
+                                             //avec padding : s^e mod n = µ(H(m))
    if(padding)
       padding_signature(pkcs_hm);            //µ(H(m))
    

@@ -18,16 +18,14 @@ static void padding_dechiffrement(mpz_t m)
    mpz_t msk;
    mpz_init(msk);
 
-   strncpy(str_m, "\0", strlen(str_m));
+   str_m[0] = '\0';
    
-   for(i = 0; i < size_m - (size_m - 74); i++)
-   {
-      strncat(str_m, "0", size_m - strlen(str_m) - 1);
+   for (i = 0; i < 74; i++) {
+      str_m[i] = '0';
    }
 
-   for(i = 0; i < size_m - 74; i++)
-   {
-      strncat(str_m, "1", size_m - strlen(str_m) - 1);
+   for (i = 74; i < size_m; i++) {
+      str_m[i] = '1';
    }
 
    mpz_set_str(msk, str_m, 2);
