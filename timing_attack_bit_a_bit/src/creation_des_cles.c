@@ -3,6 +3,7 @@
 #include <gmp.h>
 #include "miller_rabin.h"
 #include "creation_des_cles.h"
+#include "logs.h"
 
 //nombre de bits qui seront utilisés pour p et q
 #define PRIME_NUMBER_SIZE prime_size
@@ -35,7 +36,7 @@ void generer_npq(mpz_t n, mpz_t p, mpz_t q)
 
     p_size = (unsigned int) mpz_sizeinbase(p, 2);
     q_size = (unsigned int) mpz_sizeinbase(q, 2);
-    printf("taille de p : %u\ttaille de q: %u\n", p_size, q_size);
+    fprintf(logs, "taille de p : %u\ttaille de q: %u\n", p_size, q_size);
 
     mpz_mod_ui(verif_p, p, 65537);     //p mod e
     mpz_mod_ui(verif_q, q, 65537);     //q mod e
@@ -120,7 +121,7 @@ void generer_exposant_privee(const mpz_t e, const mpz_t phi_n, mpz_t d)
     //si l'inverse modulaire n'existe pas on arrête le programme
     if(!(mpz_invert(d, e, phi_n)))
     {
-        fprintf(stderr,"Erreur: l'inverse modulaire de l'exposant public n'existe pas.\n");
+        fprintf(logs, "Erreur: l'inverse modulaire de l'exposant public n'existe pas.\n");
         mpz_clear(pgcd_r);
         
         exit(5);
@@ -130,14 +131,14 @@ void generer_exposant_privee(const mpz_t e, const mpz_t phi_n, mpz_t d)
         //si le PGCD(e,d) ≠ 1 on arrête le programme
         if(mpz_cmp_ui(pgcd_r, 1))
         {
-            fprintf(stderr,"Erreur: l'inverse modulaire de l'exposant public n'est pas premier avec l'exposant privé d.\n");
+            fprintf(logs, "Erreur: l'inverse modulaire de l'exposant public n'est pas premier avec l'exposant privé d.\n");
             mpz_clear(pgcd_r);
             
             exit(6);
         }
 
         d_size = (unsigned int) mpz_sizeinbase(d, 2);   //taille de d
-        //print("d_size : %u", d_size);
+        //printf("d_size : %u", d_size);
     }
 }
 
@@ -151,16 +152,16 @@ void affichage_binaire_mpz(const mpz_t d)
     mpz_set_ui(msk, 1);
     mpz_set(tmp_d, d);
 
-    printf("\n");
+    fprintf(logs, "\n");
     for(i = d_size; i > 0; i--)
     {
         mpz_tdiv_q_2exp(rop, tmp_d, i - 1); //recupération du bit de poids faible de d
         mpz_and(rop, rop, msk);             //récupération de la valeur du bit de d
         
         if(!(mpz_cmp_ui(rop, 1)))
-            printf("1");
+            fprintf(logs, "1");
         else
-            printf("0");
+            fprintf(logs, "0");
     }
-    printf("\n");
+    fprintf(logs, "\n");
 }

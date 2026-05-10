@@ -8,6 +8,7 @@
 #include "square_multiply.h"
 #include "chiffrement.h"
 #include "dechiffrement.h"
+#include "logs.h"
 
 //PKCS#1 v1.5 pour le déchiffrement (extraie m de PKCS#1 chiffré)
 static void padding_dechiffrement(mpz_t m)
@@ -56,9 +57,9 @@ void verification_signature(mpz_t s, const mpz_t e, const mpz_t n, const mpz_t h
 
    if(!(mpz_cmp(pkcs_ms, pkcs_hm)))
    {
-      printf("signature valide.\n\n");
+      fprintf(logs, "signature valide.\n\n");
    } else {
-      fprintf(stderr, "signature invalide.\n\n");
+      fprintf(logs, "signature invalide.\n\n");
       mpz_clear(pkcs_ms);
       mpz_clear(pkcs_hm);
       exit(8);

@@ -15,6 +15,7 @@
 #include "dechiffrement.h"
 #include "rsa.h"
 #include "timing_attack.h"
+#include "logs.h"
 
 bool padding = true; //padding par defaut
 
@@ -159,7 +160,7 @@ void run(void)
     char* iteration = NULL;
     char* temps_reduction = NULL;
     srand(getpid() + time(NULL));           //utiliser pour p, q, PKCS#1, (et le message clair)
-    printf("\n\t\t--Timing Attack--\n");
+    fprintf(logs, "\n\t\t--Timing Attack--\n");
     choix_mode_rsa(&m);
     choix_taille_module_rsa(&t);
     if(m == '2')
@@ -177,40 +178,40 @@ void run(void)
 
     if(t == '1')
     {
-        printf("\n\t\tRSA-1024");
+        fprintf(logs, "\n\t\tRSA-1024");
         prime_size = PRIME_LOW_SIZE;
     }
 
     if(t == '2')
     {
-        printf("\n\t\tRSA-2048");
+        fprintf(logs, "\n\t\tRSA-2048");
         prime_size = PRIME_MEDIUM_SIZE;
     }
 
     if(t == '3')
     {
-        printf("\n\t\tRSA-3072");
+        fprintf(logs, "\n\t\tRSA-3072");
         prime_size = PRIME_LONG_SIZE;
     }
 
     if(t == '4')
     {
-        printf("\n\t\tRSA-4096");
+        fprintf(logs, "\n\t\tRSA-4096");
         prime_size = PRIME_VERY_LONG_SIZE;
     }
 
     if(m == '1')
-        printf("-CLASSIQUE");
+        fprintf(logs, "-CLASSIQUE");
     else
-        printf("-MONTGOMERY");
+        fprintf(logs, "-MONTGOMERY");
 
     if(p == '1') {
         padding = true;
-        printf("-AVEC_PADDING\n\n");
+        fprintf(logs, "-AVEC-PADDING\n\n");
     }
     else {
         padding = false;
-        printf("-SANS_PADDING\n\n");
+        fprintf(logs, "-SANS-PADDING\n\n");
     }
 
     if(m == '2')
@@ -223,6 +224,8 @@ void run(void)
     }
 
     run_rsa(m, nombre_iteration);
+
+    fclose(logs);
 
     if(m == '2')
     {
@@ -264,32 +267,33 @@ void run_rsa(const char mode, unsigned long int numero_iteration)
     mpz_init(d_secret);
     mpz_init(tmp_m);
 
-    printf("chiffrement n°%lu\n", iteration - numero_iteration + 1);
+
+    fprintf(logs, "chiffrement n°%lu\n", iteration - numero_iteration + 1);
     //message clair aléatoire
     mpz_set_ui(m, (unsigned long int) rand());
-    gmp_printf("message d'origine : %Z0X\n", m);
+    gmp_fprintf(logs, "message d'origine : %Z0X\n", m);
     mpz_set(s, m);
     mpz_set(hm, m);
     hash(hm);
     
-    //gmp_printf("\nhash : %Z0X\n", hm);
+    //gmp_fprintf(logs, "\nhash : %Z0X\n", hm);
     mpz_set(pkcs_sgn, hm);
 
     //génération de n, p, q
     generer_npq(n, p, q);
-    //gmp_printf("\np : %Zd, \nq : %Zd, \nn : %Zd\n", p, q, n);
+    //gmp_fprintf(logs, "\np : %Zd, \nq : %Zd, \nn : %Zd\n", p, q, n);
     
     //génération de phi(n)
     phi(p, q, phi_n);
-    //gmp_printf("\nphi(n) : %Zd\n", phi_n);
+    //gmp_fprintf(logs, "\nphi(n) : %Zd\n", phi_n);
     
     //génération de e
     generer_exposant_public(e);
-    gmp_printf("exposant publique e : %Zd\n\n", e);
+    gmp_fprintf(logs, "exposant publique e : %Zd\n\n", e);
 
     //génération de d
     generer_exposant_privee(e, phi_n, d);
-    //gmp_printf("\nexposant privee d : %Zd\n", d);
+    //gmp_fprintf(logs, "\nexposant privee d : %Zd\n", d);
 
     if(mode == '2')
     {
@@ -301,9 +305,9 @@ void run_rsa(const char mode, unsigned long int numero_iteration)
     {
         if(iteration != numero_iteration)
         {
-            printf("chiffrement n°%lu\n", iteration - numero_iteration + 1);
+            fprintf(logs, "chiffrement n°%lu\n", iteration - numero_iteration + 1);
             mpz_set_ui(m, (unsigned long int) rand());  //génération d'un nouveau message aléatoire
-            gmp_printf("message d'origine : %Z0X\n", m);
+            gmp_fprintf(logs, "message d'origine : %Z0X\n", m);
             mpz_set(s, m);
             mpz_set(hm, m);
             hash(hm);
@@ -316,7 +320,7 @@ void run_rsa(const char mode, unsigned long int numero_iteration)
             generer_R_montgomery(r);
             //bezout
             bezout(r, n, u, v, pgcd_bezout);
-            //gmp_printf("R(%Zd) * v(%Zd) + N(%Zd) * u(%Zd)\n\n", r, u, n, v);
+            //gmp_fprintf(logs, "R(%Zd) * v(%Zd) + N(%Zd) * u(%Zd)\n\n", r, u, n, v);
         }
 
         //chiffrement de m
@@ -324,11 +328,11 @@ void run_rsa(const char mode, unsigned long int numero_iteration)
             chiffrement_RSA(m, e, n, c);
         else
             chiffrement_RSA_montgomery(m, e, n, c, v, n_size);
-        gmp_printf("chiffré : %Z0X\n", c);
+        gmp_fprintf(logs, "chiffré : %Z0X\n", c);
 
         //signature de m
         signature(pkcs_sgn, d, n, s);
-        //gmp_printf("\nsignature : %Z0X\n", s);
+        //gmp_fprintf(logs, "\nsignature : %Z0X\n", s);
 
         //vérification de s
         verification_signature(s, e, n, hm);
@@ -340,56 +344,56 @@ void run_rsa(const char mode, unsigned long int numero_iteration)
             dechiffrement_RSA(c, d, n, m);
         else
             dechiffrement_RSA_montgomery(c, d, n, m, v, n_size);
-        gmp_printf("message déchiffré : %Z0X\n", m);
+        gmp_fprintf(logs, "message déchiffré : %Z0X\n", m);
         
         DECRYPT = 0;
 
         numero_iteration--;
         if(mode == '2')
-            printf("********************************************************************************************************************************************************************************************************\n");
+            fprintf(logs, "********************************************************************************************************************************************************************************************************\n");
     }
 
     if(mode ==  '2')
     {
         //afficher_ensemble_simple(A, "A");
         //afficher_ensemble_simple(B, "B");
-        //printf("\n");
+        //fprintf(logs, "\n");
         //afficher_tableau_T();
         
         //Affichage de d
-        //printf("taille de n : %u\n", n_size);
-        //printf("taille de d : %u\n", d_size);
+        //fprintf(logs, "taille de n : %u\n", n_size);
+        //fprintf(logs, "taille de d : %u\n", d_size);
         //affichage_binaire_mpz(d);
         
         //Affichage de d secret
         reconstituer_d(d_secret);   //reconstitution à l'aide du tableau T
         taille = (unsigned int) mpz_sizeinbase(d_secret, 2);    //taille de d secret
-        printf("taille de d secret : %u\n", taille);
+        fprintf(logs, "taille de d secret : %u\n", taille);
         //affichage_binaire_mpz(d_secret);
 
         //Comparaison entre d et d secret
-        //gmp_printf("\nd : %Z0X\n", d);
-        gmp_printf("\nd secret trouvé : %Z0X\n", d_secret);
-        printf("\n");
+        //gmp_fprintf(logs, "\nd : %Z0X\n", d);
+        gmp_fprintf(logs, "\nd secret trouvé : %Z0X\n", d_secret);
+        fprintf(logs, "\n");
 
         //Vérification de d secret
-        printf("vérification de d secret ...\n\n");
-        gmp_printf("message clair attendu : %Z0X\n", m);
-        gmp_printf("chiffré test : %Z0X\n", c);
+        fprintf(logs, "vérification de d secret ...\n\n");
+        gmp_fprintf(logs, "message clair attendu : %Z0X\n", m);
+        gmp_fprintf(logs, "chiffré test : %Z0X\n", c);
         mpz_set(tmp_m, m);
         dechiffrement_RSA_montgomery(c, d_secret, n, m, v, n_size);
-        gmp_printf("message déchiffré : %Z0X\n", m);
+        gmp_fprintf(logs, "message déchiffré : %Z0X\n", m);
         if(!(mpz_cmp(tmp_m, m)))
         {
-            printf("d secret est valide.\n\n");
-            printf("L'attaque temporelle a réussi.\n");
+            fprintf(logs, "d secret est valide.\n\n");
+            fprintf(logs, "L'attaque temporelle a réussi.\n");
         } else {
-            fprintf(stderr,"d secret est invalide.\n\n");
-            printf("L'attaque temporelle a échoué.\n");
+            fprintf(logs, "d secret est invalide.\n\n");
+            fprintf(logs, "L'attaque temporelle a échoué.\n");
         }
         
-        printf("\ttemps de la reduction : %.9f\n", TEMPS_REDUC * 1e-9);
-        printf("\tmessage(s) par bit : %lu\n", iteration);
+        fprintf(logs, "\ttemps de la reduction : %.9f\n", TEMPS_REDUC * 1e-9);
+        fprintf(logs, "\tmessage(s) par bit : %lu\n", iteration);
 
         //désallocation des ensembles A et B
         supprimer_ensemble(&A, "A");
@@ -418,10 +422,10 @@ void run_rsa(const char mode, unsigned long int numero_iteration)
 
     //-----------------------------------FIN_CHRONO-----------------------------------------
     fin_chrono(&temps_cpu_total,t_cpu_deb,t_cpu_fin,&temps_reel_total,t_reel_deb,t_reel_fin);
-    printf("\t");
+    fprintf(logs, "\t");
     afficher_temps_cpu(&temps_cpu_total);
-    printf("\t");
+    fprintf(logs, "\t");
     afficher_temps_reel(&temps_reel_total);
     //--------------------------------------------------------------------------------------
-    printf("\n");
+    fprintf(logs, "\n");
 }

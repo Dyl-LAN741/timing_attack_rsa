@@ -19,6 +19,7 @@
 #include "chiffrement.h"
 #include "temps.h"
 #include "timing_attack.h"
+#include "logs.h"
 
 #define PADDING_SIZE 88
 #define BYTE_SIZE 8
@@ -30,7 +31,6 @@
 static void padding_chiffrement(mpz_t m)
 {
    size_t i, j;
-   double bit_value = 0, limit_value = 0;
    size_t size_m = mpz_sizeinbase(m, 2);
    char* random_number = malloc(sizeof(char) * PADDING_SIZE + size_m + 1); //chaine de 88 bits (11 octets) + bits du message
    char* byte = malloc(sizeof(char) * BYTE_SIZE + 1);   //chaine de 8 bits (1 octet)
@@ -38,7 +38,7 @@ static void padding_chiffrement(mpz_t m)
    
    if(!random_number || !byte || !tmp)
    {
-      fprintf(stderr, "Erreur: échec du malloc pour le padding chiffrement.\n");
+      fprintf(logs, "Erreur: échec du malloc pour le padding chiffrement.\n");
       free(random_number);
       free(byte);
       free(tmp);
@@ -63,7 +63,7 @@ static void padding_chiffrement(mpz_t m)
          }
 
          mpz_set_str(m, random_number, 2);
-         gmp_printf("PKCS#1 v1.5 : %Z0X\n", m);
+         gmp_fprintf(logs, "PKCS#1 v1.5 : %Z0X\n", m);
          break;
       }
       //1 octet ØØ
@@ -80,11 +80,13 @@ static void padding_chiffrement(mpz_t m)
       {
          do 
          {
-            strncpy(byte,"\0", strlen(byte));
             for(j = 0; j < BYTE_SIZE; j++)
             {
-               random_bit(&byte, bit_value, limit_value, BYTE_SIZE + 1);
+               byte[j] = (rand() & 1) ? '1' : '0';
             }
+
+            byte[BYTE_SIZE] = '\0';
+         
          } while(strncmp(byte,"00000000", BYTE_SIZE) == 0);
 
          strncat(random_number, byte, PADDING_SIZE + size_m + 1 - strlen(random_number) - 1);
@@ -168,9 +170,9 @@ void hash(mpz_t hm)
       goto err;
 
    // Print out the digest result
-   printf("message haché - SHA256 :\n");
-   BIO_dump_fp(stdout, outdigest, len);
-   printf("\n");
+   fprintf(logs, "message haché - SHA256 :\n");
+   BIO_dump_fp(logs, outdigest, len);
+   fprintf(logs, "\n");
    
    for(i = 0; i < 32; i++)
    {
@@ -189,8 +191,8 @@ void hash(mpz_t hm)
       {
          strncat(tmp, hexa, 65 - strlen(tmp) - 1);
       }
-      //printf("hexa: %s\n", hexa);
-      //printf("hash: %s\n", tmp);
+      //fprintf(logs, "hexa: %s\n", hexa);
+      //fprintf(logs, "hash: %s\n", tmp);
    }
    mpz_set_str(hm, tmp, 16);   //récupération du hash
 
@@ -205,7 +207,7 @@ void hash(mpz_t hm)
       free(tmp);
       free(hexa);
       if(error != 0)
-         ERR_print_errors_fp(stderr);
+         ERR_print_errors_fp(logs);
 }
 
 /* PKCS#1 v1.5 pour la signature
@@ -222,7 +224,7 @@ void padding_signature(mpz_t m)    //m est déjà hashé
    
    if(!random_number || !byte || !tmp)
    {
-      fprintf(stderr, "Erreur: échec du malloc pour le padding signature.\n");
+      fprintf(logs, "Erreur: échec du malloc pour le padding signature.\n");
       free(random_number);
       free(byte);
       free(tmp);
@@ -248,7 +250,7 @@ void padding_signature(mpz_t m)    //m est déjà hashé
 
          mpz_set_str(m, random_number, 16);
 
-         //gmp_printf("PKCS#1 v1.5 signé: %Z0X\n", m);
+         //gmp_fprintf(logs, "PKCS#1 v1.5 signé: %Z0X\n", m);
 
          break;
       }
@@ -366,10 +368,10 @@ void Montgomery_product(const mpz_t v, const mpz_t a_bar, const mpz_t b_bar, con
             switch (errno)
             {
                case EINTR:
-                  printf("Nanosleep interrompue.\n");
+                  fprintf(logs, "Nanosleep interrompue.\n");
                   exit(17);
                case EINVAL:
-                  printf("Le temps n'est pas contenu dans l'intervalle des nanosecondes.\n");   //intervalle = [ 0, 999 999 999 ]
+                  fprintf(logs, "Le temps n'est pas contenu dans l'intervalle des nanosecondes.\n");   //intervalle = [ 0, 999 999 999 ]
                   exit(18);
                default:
                   perror("Erreur (nanosleep) : ");

@@ -7,6 +7,7 @@
 #include "temps.h"
 #include "timing_attack.h"
 #include "creation_des_cles.h"
+#include "logs.h"
 
 //Initialisation des variables globales par défaut
 ENSEMBLE* A = NULL;
@@ -31,7 +32,7 @@ ELEMENT* initialiser_element(const double temps)
 
 	if(!elem)
 	{
-		fprintf(stderr, "Erreur lors de l'allocation de l'element.\n");
+		fprintf(logs, "Erreur lors de l'allocation de l'element.\n");
 		exit(10);
 	}
 
@@ -45,11 +46,11 @@ void afficher_element(const ELEMENT* elem, const char* nom)
 {
 	if(!elem)
 	{
-		printf("\t\tL'element %s est vide.\n\n", nom);
+		fprintf(logs, "\t\tL'element %s est vide.\n\n", nom);
 		return;
 	}
 
-	printf("\t\tL'element %s est %.9f\n\n", nom, elem->temps);
+	fprintf(logs, "\t\tL'element %s est %.9f\n\n", nom, elem->temps);
 }
 
 LISTE* initialiser_liste(void)
@@ -58,7 +59,7 @@ LISTE* initialiser_liste(void)
 	
 	if(!liste)
 	{
-		fprintf(stderr, "Erreur lors de l'allocation de la liste.\n");
+		fprintf(logs, "Erreur lors de l'allocation de la liste.\n");
 		exit(11);
 	}
 
@@ -85,47 +86,47 @@ void afficher_liste_complete(const LISTE* liste, const char* nom)
 {	
 	if(verification_liste_non_null(liste))
 	{
-		printf("\t\t%s", nom);
+		fprintf(logs, "\t\t%s", nom);
 		
 		if(!liste->elem)
 		{
-			printf(" (taille 0) (temps moyen 0) (temps total 0) :\n\n");
-			printf("\t\t   vide\n\n");
+			fprintf(logs, " (taille 0) (temps moyen 0) (temps total 0) :\n\n");
+			fprintf(logs, "\t\t   vide\n\n");
 			return;
 		}
 		
 		unsigned long int i = 1;
-		printf(" (taille %lu) (temps moyen %f) (temps total %f) :\n\n", liste->taille, liste->temps_moyen, liste->temps_total);
-		printf("\t\t   [%lu]: %f\n", i, liste->elem->temps);
+		fprintf(logs, " (taille %lu) (temps moyen %f) (temps total %f) :\n\n", liste->taille, liste->temps_moyen, liste->temps_total);
+		fprintf(logs, "\t\t   [%lu]: %f\n", i, liste->elem->temps);
 		ELEMENT* e = liste->elem->suiv;
 		while(e)
 		{
 			i++;
-			printf("\t\t   [%lu]: %f\n", i, e->temps);
+			fprintf(logs, "\t\t   [%lu]: %f\n", i, e->temps);
 			e = e->suiv;
 		}
-		printf("\n");
+		fprintf(logs, "\n");
 		return;
 	}
-	fprintf(stderr,"\t\tLa liste %s n'existe pas.\n\n", nom);
+	fprintf(logs,"\t\tLa liste %s n'existe pas.\n\n", nom);
 }
 
 void afficher_liste_simple(const LISTE* liste, const char* nom)
 {	
 	if(verification_liste_non_null(liste))
 	{
-		printf("%s", nom);
+		fprintf(logs, "%s", nom);
 		
 		if(!liste->elem)
 		{
-			printf("\n\ttaille : 0\n\ttemps moyen : 0\n\ttemps total : 0\n\n");
+			fprintf(logs, "\n\ttaille : 0\n\ttemps moyen : 0\n\ttemps total : 0\n\n");
 			return;
 		}
 		
-		printf("\n\ttaille : %lu\n\ttemps moyen %.9f\n\ttemps total : %.6f\n\n", liste->taille, liste->temps_moyen, liste->temps_total);
+		fprintf(logs, "\n\ttaille : %lu\n\ttemps moyen %.9f\n\ttemps total : %.6f\n\n", liste->taille, liste->temps_moyen, liste->temps_total);
 		return;
 	}
-	fprintf(stderr,"\t\tLa liste %s n'existe pas.\n\n", nom);
+	fprintf(logs,"\t\tLa liste %s n'existe pas.\n\n", nom);
 }
 
 void ajouter_element_liste(ELEMENT* elem, LISTE** liste)
@@ -185,7 +186,7 @@ void supprimer_liste(LISTE** liste, const char* nom)
 			*liste = NULL;
 			free((*liste)->elem);
 			free(*liste);
-			printf("\t\tLa liste %s a ete supprimee.\n\n", nom);
+			fprintf(logs, "\t\tLa liste %s a ete supprimee.\n\n", nom);
 			return;
 		}
 
@@ -196,18 +197,18 @@ void supprimer_liste(LISTE** liste, const char* nom)
 			(*liste)->elem = NULL;
 			free((*liste)->elem);
 			(*liste)->taille--;
-			//printf("\t\tL'element %lu a ete supprime.\n", (*liste)->taille + 1);
+			//fprintf(logs, "\t\tL'element %lu a ete supprime.\n", (*liste)->taille + 1);
 			(*liste)->elem = e;
 			e = e->suiv;
 		}
 		(*liste)->elem = NULL;
 		free((*liste)->elem);
 		(*liste)->taille--;
-		//printf("\t\tL'element %lu a ete supprime.\n", (*liste)->taille + 1);
+		//fprintf(logs, "\t\tL'element %lu a ete supprime.\n", (*liste)->taille + 1);
 		*liste = NULL;
 	}
 	free(*liste);
-	printf("\t\tLa liste %s a ete supprimee.\n\n", nom);
+	fprintf(logs, "\t\tLa liste %s a ete supprimee.\n\n", nom);
 }
 
 ENSEMBLE* initialiser_ensemble(void)
@@ -218,7 +219,7 @@ ENSEMBLE* initialiser_ensemble(void)
 	
 	if(!ens)
 	{
-		fprintf(stderr, "Erreur lors de l'allocation de l'ensemble.\n");
+		fprintf(logs, "Erreur lors de l'allocation de l'ensemble.\n");
 		exit(12);
 	}
 
@@ -226,7 +227,7 @@ ENSEMBLE* initialiser_ensemble(void)
 	
 	if(!ens->bit)
 	{
-		fprintf(stderr, "Erreur lors de l'allocation de l'ensemble.\n");
+		fprintf(logs, "Erreur lors de l'allocation de l'ensemble.\n");
 		exit(13);
 	}
 
@@ -271,7 +272,7 @@ void afficher_ensemble_complet(ENSEMBLE* ens, const char* nom)
 				strncat(nom_ensemble, "[", buffer_ensemble - strlen(nom_ensemble) - 1);
 				strncat(nom_ensemble, str_bit, buffer_ensemble - strlen(nom_ensemble) - 1);
 				strncat(nom_ensemble, "]", buffer_ensemble - strlen(nom_ensemble) - 1);
-				printf("%s\n", nom_ensemble);
+				fprintf(logs, "%s\n", nom_ensemble);
 				
 				sprintf(str_bit, "%d", i+1);
 				strncat(nom_liste, str_bit, 9 - strlen(nom_liste) - 1);
@@ -309,7 +310,7 @@ void afficher_ensemble_simple(ENSEMBLE* ens, const char* nom)
 				strncat(nom_liste, str_bit, 9 - strlen(nom_liste));
 
 				strncat(nom_ensemble, nom_liste, buffer_ensemble - strlen(nom_ensemble) - 1);
-				printf("%s\n", nom_ensemble);
+				fprintf(logs, "%s\n", nom_ensemble);
 
 				afficher_liste_simple(ens->bit[i], "");
 			}
@@ -335,7 +336,7 @@ ELEMENT* retourner_element(ENSEMBLE** ens, const unsigned int i)
 		return e;
 	}
 
-	fprintf(stderr,"Erreur : L'ensemble n'existe pas.\n");
+	fprintf(logs, "Erreur : L'ensemble n'existe pas.\n");
 
 	return NULL;
 }
@@ -405,7 +406,7 @@ void supprimer_ensemble(ENSEMBLE** ens, const char* nom)
 		*ens = NULL;
 	}
 	free(*ens);
-	//printf("\t\tL'ensemble %s a ete supprimee.\n\n", nom);
+	//fprintf(logs, "\t\tL'ensemble %s a ete supprimee.\n\n", nom);
 }
 
 TAB* initialiser_tableau(void)
@@ -415,7 +416,7 @@ TAB* initialiser_tableau(void)
 	
 	if(!tab)
 	{
-		fprintf(stderr, "Erreur lors de l'allocation de la map.\n");
+		fprintf(logs, "Erreur lors de l'allocation de la map.\n");
 		exit(14);
 	}
 
@@ -423,7 +424,7 @@ TAB* initialiser_tableau(void)
 
 	if(!tab->difference)
 	{
-		fprintf(stderr, "Erreur lors de l'allocation de la map.\n");
+		fprintf(logs, "Erreur lors de l'allocation de la map.\n");
 		exit(15);
 	}
 
@@ -431,7 +432,7 @@ TAB* initialiser_tableau(void)
 
 	if(!tab->bit_value)
 	{
-		fprintf(stderr, "Erreur lors de l'allocation de la map.\n");
+		fprintf(logs, "Erreur lors de l'allocation de la map.\n");
 		exit(16);
 	}
 
@@ -455,16 +456,16 @@ void supprimer_tableau(TAB** tab)
 		*tab = NULL;
 	}
 	free(*tab);
-	//printf("\t\tLe tableau a ete supprimee.\n\n");
+	//fprintf(logs, "\t\tLe tableau a ete supprimee.\n\n");
 }
 
 void afficher_tableau_T(void)
 {
 	unsigned int i;
-	printf("T :\n");
+	fprintf(logs, "T :\n");
 	for(i = 0; i < d_size; i++)
 	{
-		printf("\tbit %d\n\tdifference : %.9f\n\tvaleur du bit : %u\n\n", i+1, T->difference[i], T->bit_value[i]);
+		fprintf(logs, "\tbit %d\n\tdifference : %.9f\n\tvaleur du bit : %u\n\n", i+1, T->difference[i], T->bit_value[i]);
 	}
 }
 

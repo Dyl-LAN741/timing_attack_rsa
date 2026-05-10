@@ -2,6 +2,7 @@
 #include <stdio.h> 
 #include <sys/time.h>
 #include <time.h>
+#include "logs.h"
 
 /*
 *	Fonction qui permet de calculer le temps réel.
@@ -21,14 +22,14 @@ void temps_cpu(clock_t *temps_cpu_t) {
 *	Fonction qui permet afficher le temps réel écoulé depuis le début de l'exécution.
 */
 void afficher_temps_reel(double *temps_reel) {
-	printf("temps réel = %.2f secondes\n",*temps_reel);
+	fprintf(logs, "temps réel = %.2f secondes\n",*temps_reel);
 }
 
 /*
 *	Fonction qui permet afficher le temps CPU écoulé depuis le début de l'exécution.
 */
 void afficher_temps_cpu(double *temps_cpu) {
-	printf("temps CPU = %.12f secondes\n",*temps_cpu);
+	fprintf(logs, "temps CPU = %.12f secondes\n",*temps_cpu);
 }
 
 /*

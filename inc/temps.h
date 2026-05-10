@@ -12,7 +12,6 @@
 #include <sys/time.h>
 #include <time.h>
 
-
 struct timespec;	//fix warning scope
 
 void temps_reel(struct timespec *tr);
