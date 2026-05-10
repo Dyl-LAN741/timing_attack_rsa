@@ -108,7 +108,7 @@ void afficher_liste_complete(const LISTE* liste, const char* nom)
 		fprintf(logs, "\n");
 		return;
 	}
-	fprintf(logs,"\t\tLa liste %s n'existe pas.\n\n", nom);
+	fprintf(logs, "\t\tLa liste %s n'existe pas.\n\n", nom);
 }
 
 void afficher_liste_simple(const LISTE* liste, const char* nom)
@@ -126,7 +126,7 @@ void afficher_liste_simple(const LISTE* liste, const char* nom)
 		fprintf(logs, "\n\ttaille : %lu\n\ttemps moyen %.9f\n\ttemps total : %.6f\n\n", liste->taille, liste->temps_moyen, liste->temps_total);
 		return;
 	}
-	fprintf(logs,"\t\tLa liste %s n'existe pas.\n\n", nom);
+	fprintf(logs, "\t\tLa liste %s n'existe pas.\n\n", nom);
 }
 
 void ajouter_element_liste(ELEMENT* elem, LISTE** liste)
